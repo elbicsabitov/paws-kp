@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=842, initial-scale=1.0">
+<title>Paws.kz — КП для Форте Банк</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Montserrat+Alternates:wght@700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #E8E8E8; font-family: 'Montserrat', sans-serif; color: #212121; }
+.slide {
+  width: 842px; height: 595px; background: #fff; margin: 20px auto;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15); overflow: hidden; position: relative;
+}
+@media print {
+  body { background: #fff; }
+  .slide { box-shadow: none; margin: 0 auto; page-break-after: always; }
+}
+
+/* Utility */
+.orange { color: #F26D00; }
+.brand-orange { color: #FF9500; }
+.gray { color: #7A7A7A; }
+.strike { text-decoration: line-through; color: #7A7A7A; font-weight: 500; }
+
+/* Montserrat Alternates for headings */
+.heading-alt { font-family: 'Montserrat Alternates', 'Montserrat', sans-serif; }
+
+/* Price slide layout */
+.price-slide { display: flex; height: 100%; }
+.price-left { width: 420px; padding: 17px 32px 40px 32px; display: flex; flex-direction: column; justify-content: flex-start; }
+.price-right { width: 422px; background: #FFF5E6; padding: 40px 32px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; }
+.price-left .city-label { font-size: 18px; color: #7A7A7A; font-weight: 600; margin-bottom: 4px; line-height: 1.3; }
+.price-left .service-title { font-family: 'Montserrat Alternates', 'Montserrat', sans-serif; font-size: 44px; font-weight: 700; line-height: 1.1; margin-bottom: 4px; }
+.price-left .service-sub { font-size: 18px; color: #7A7A7A; font-weight: 600; margin-bottom: 48px; line-height: 1.3; }
+.price-row { display: flex; justify-content: space-between; padding: 0; min-height: 64px; align-items: center; }
+.price-row:last-child { border-bottom: none; }
+.price-row .label { font-size: 20px; font-weight: 600; line-height: 1.2; }
+.price-row .prices { text-align: right; }
+.price-row .current { font-size: 20px; font-weight: 700; color: #F26D00; line-height: 1.2; }
+.price-row .old { font-size: 16px; font-weight: 600; }
+
+.price-right .disc-header { font-size: 18px; font-weight: 700; line-height: 1.3; margin-bottom: 20px; text-align: center; }
+.disc-card { background: #fff; border-radius: 16px; padding: 12px 16px; margin-bottom: 14px; text-align: center; width: 358px; min-height: 67px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.disc-card .disc-pct { font-size: 20px; font-weight: 700; color: #F26D00; line-height: 1.2; }
+.disc-card .disc-cond { font-size: 16px; font-weight: 500; margin-top: 2px; line-height: 1.2; }
+</style>
+</head>
+<body>
+
+<!-- ===================== SLIDE 1 — Cover ===================== -->
+<div class="slide">
+  <!-- Dog image — behind text (z-index: 1) -->
+  <!-- Figma bounds: x=381, y=-42, w=486, h=728; clipped by slide (842x595) -->
+  <img src="./images/slide1-dog.png" alt="Chocolate labrador"
+       style="position: absolute; right: -25px; top: -42px; width: 486px; height: 728px;
+              object-fit: cover; z-index: 1;">
+
+  <!-- Text area — in front of dog (z-index: 2) -->
+  <div style="position: absolute; left: 40px; top: 40px; width: 445px; z-index: 2;">
+    <!-- Logo -->
+    <img src="./images/logo-paws.png" alt="Paws"
+         style="height: 40px; width: auto; object-fit: contain; margin-bottom: 80px; display: block;">
+    <h1 class="heading-alt" style="font-size: 48px; font-weight: 700; line-height: 1.15; margin-bottom: 24px;">
+      Корпоративное<br>предложение<br>для Форте Банк
+    </h1>
+    <p style="font-size: 20px; font-weight: 600; line-height: 1.35; color: #212121;">
+      Выгул, няня, передержка.<br>
+      Забота о питомцах ваших<br>
+      сотрудников — наша работа <svg style="display: inline-block; vertical-align: middle; margin-left: 4px;" width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.02 14.77L9.38 15.97C9.37 15.98 9.36 15.99 9.34 16L7.75 14.66C2.8 10.32 -2.82 5.55 1.6 1.66C4.67 -1.05 8.23 1.47 10.02 3.11C11.92 1.59 15.92 -2.72 19.27 2.52C22.08 6.87 16.24 10.76 11.02 14.77Z" fill="#FF9500"/></svg>
+    </p>
+  </div>
+</div>
+
+<!-- ===================== SLIDE 2 — Story ===================== -->
+<div class="slide">
+  <h2 class="heading-alt" style="font-size: 36px; font-weight: 700; line-height: 1.0; padding: 40px 40px 0 40px; text-align: left; position: relative; z-index: 1;">
+    Это Алим, он сотрудник в Форте Банк и хозяин собачки — Арчи
+  </h2>
+
+  <!-- Top-left card (z-index: 1) — background alpha, NOT opacity on whole div -->
+  <div style="position: absolute; left: 40px; top: 136px; width: 450px; height: 237px; background: linear-gradient(196deg, rgba(255,236,209,0.6), rgba(255,243,227,0.6)); border-radius: 16px; padding: 20px; z-index: 1;">
+    <p style="font-size: 24px; font-weight: 700; line-height: 1.15; margin-bottom: 8px;">
+      Алим два раза в год <span class="orange">уезжает в&nbsp;отпуск</span> и часто отправляется <span class="orange">в&nbsp;командировки</span>
+    </p>
+    <p style="font-size: 16px; font-weight: 500; color: #212121; line-height: 1.3; margin-top: 12px; max-width: 283px;">
+      Каждый раз он беспокоится, с кем оставить Арчи. Вместо того, чтобы готовиться к предстоящим поездкам — он ищет где оставить своего любимца.
+    </p>
+  </div>
+
+  <!-- Top-right card (z-index: 1) — background alpha, NOT opacity on whole div -->
+  <div style="position: absolute; left: 506px; top: 136px; width: 296px; height: 237px; background: linear-gradient(196deg, rgba(255,236,209,0.6), rgba(255,243,227,0.6)); border-radius: 16px; padding: 20px; z-index: 1;">
+    <p style="font-size: 24px; font-weight: 700; line-height: 1.15; margin-bottom: 8px;">
+      Иногда Алиму<br>нужно <span class="orange">задержаться<br>на работе</span>
+    </p>
+    <p style="font-size: 16px; font-weight: 500; color: #212121; line-height: 1.3;">
+      Он переживает, что Арчи сидит дома один и скучает. Ему хотелось бы, чтобы кто-то присмотрел за его питомцем в&nbsp;такие моменты.
+    </p>
+  </div>
+
+  <!-- Center illustration — ON TOP of all cards per Figma -->
+  <!-- Figma bounds: x=327, y=224, w=192, h=328 -->
+  <img src="./images/slide2-illustration.png" alt="Алим и Арчи"
+       style="position: absolute; left: 327px; top: 224px; width: 192px; height: 328px;
+              object-fit: contain; z-index: 10;">
+
+  <!-- Bottom-left card (z-index: 3 — in front of illustration) -->
+  <div style="position: absolute; left: 40px; top: 389px; width: 450px; height: 166px; background: linear-gradient(196deg, rgba(255,236,209,0.6), rgba(255,243,227,0.6)); border: 2px solid #FB6F04; border-radius: 16px; padding: 20px; display: flex; align-items: center; z-index: 3;">
+    <p style="font-size: 16px; font-weight: 600; line-height: 1.3; max-width: 264px;">
+      <span style="font-weight: 700; color: #F26D00;">Paws.kz приходит на помощь!</span> Мы предлагаем домашнюю передержку с проверенными зоопомощниками и отчетами. Питомец будет в домашних условиях, без клеток.
+    </p>
+  </div>
+
+  <!-- Bottom-right card (z-index: 3) -->
+  <div style="position: absolute; left: 506px; top: 389px; width: 296px; height: 166px; background: linear-gradient(196deg, rgba(255,236,209,0.6), rgba(255,243,227,0.6)); border: 2px solid #FB6F04; border-radius: 16px; padding: 20px; display: flex; align-items: center; z-index: 3;">
+    <p style="font-size: 16px; font-weight: 600; line-height: 1.3;">
+      Наш зоопомощник может приехать к нему домой и присмотреть за пушистиком. Покормить и поиграть с ним. Также мы можем выгулять питомца за него.
+    </p>
+  </div>
+
+  <!-- Orange arrows (decorative, z-index: 4) -->
+  <svg style="position: absolute; left: 22px; top: 345px; z-index: 4; transform: rotate(-75deg);" width="48" height="26" viewBox="0 0 48 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M48 10.59L29.06 0L31.38 5.44C30.57 5.44 29.75 5.46 28.94 5.52L28.27 5.56L27.94 5.59L27.77 5.6L27.61 5.62L26.29 5.77C25.85 5.83 25.41 5.9 24.97 5.97C24.75 6 24.54 6.04 24.32 6.09L23.67 6.21C20.2 6.92 16.85 8.12 13.78 9.79C10.7 11.46 7.91 13.6 5.55 16.13L5.33 16.36L5.22 16.48L5.12 16.6L4.69 17.09L4.48 17.34C4.41 17.42 4.34 17.5 4.28 17.59L3.87 18.09C3.74 18.26 3.61 18.43 3.48 18.61L3.1 19.12C2.98 19.3 2.86 19.48 2.74 19.66L2.56 19.92L2.47 20.06C2.44 20.1 2.41 20.15 2.38 20.19C1.46 21.64 0.67 23.17 0.06 24.77C-0.1 25.19 0.07 25.67 0.48 25.89C0.92 26.13 1.47 25.96 1.7 25.52L1.71 25.51C2.45 24.12 3.34 22.82 4.34 21.62C4.37 21.58 4.4 21.55 4.43 21.51L4.53 21.4L4.72 21.18C4.85 21.03 4.98 20.88 5.11 20.74L5.51 20.32C5.65 20.18 5.78 20.03 5.92 19.9L6.34 19.49C6.41 19.42 6.48 19.36 6.55 19.29L6.77 19.09L7.2 18.7L7.31 18.61L7.42 18.51L7.65 18.33C10.04 16.34 12.74 14.77 15.59 13.66C18.44 12.54 21.44 11.89 24.45 11.66L25.02 11.62C25.21 11.61 25.39 11.59 25.58 11.59C25.96 11.58 26.34 11.57 26.71 11.56L27.84 11.58L27.98 11.58L28.12 11.59L28.41 11.6L28.97 11.63C29.48 11.67 29.99 11.71 30.5 11.76L27.06 16.3L48 10.59Z" fill="#FF9500"/>
+  </svg>
+  <svg style="position: absolute; left: 820px; top: 345px; z-index: 4; transform: rotate(-105deg);" width="48" height="26" viewBox="0 0 48 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M48 10.59L29.06 0L31.38 5.44C30.57 5.44 29.75 5.46 28.94 5.52L28.27 5.56L27.94 5.59L27.77 5.6L27.61 5.62L26.29 5.77C25.85 5.83 25.41 5.9 24.97 5.97C24.75 6 24.54 6.04 24.32 6.09L23.67 6.21C20.2 6.92 16.85 8.12 13.78 9.79C10.7 11.46 7.91 13.6 5.55 16.13L5.33 16.36L5.22 16.48L5.12 16.6L4.69 17.09L4.48 17.34C4.41 17.42 4.34 17.5 4.28 17.59L3.87 18.09C3.74 18.26 3.61 18.43 3.48 18.61L3.1 19.12C2.98 19.3 2.86 19.48 2.74 19.66L2.56 19.92L2.47 20.06C2.44 20.1 2.41 20.15 2.38 20.19C1.46 21.64 0.67 23.17 0.06 24.77C-0.1 25.19 0.07 25.67 0.48 25.89C0.92 26.13 1.47 25.96 1.7 25.52L1.71 25.51C2.45 24.12 3.34 22.82 4.34 21.62C4.37 21.58 4.4 21.55 4.43 21.51L4.53 21.4L4.72 21.18C4.85 21.03 4.98 20.88 5.11 20.74L5.51 20.32C5.65 20.18 5.78 20.03 5.92 19.9L6.34 19.49C6.41 19.42 6.48 19.36 6.55 19.29L6.77 19.09L7.2 18.7L7.31 18.61L7.42 18.51L7.65 18.33C10.04 16.34 12.74 14.77 15.59 13.66C18.44 12.54 21.44 11.89 24.45 11.66L25.02 11.62C25.21 11.61 25.39 11.59 25.58 11.59C25.96 11.58 26.34 11.57 26.71 11.56L27.84 11.58L27.98 11.58L28.12 11.59L28.41 11.6L28.97 11.63C29.48 11.67 29.99 11.71 30.5 11.76L27.06 16.3L48 10.59Z" fill="#FF9500"/>
+  </svg>
+</div>
+
+<!-- ===================== SLIDE 3 — Statistics ===================== -->
+<div class="slide">
+  <h2 class="heading-alt" style="font-size: 36px; font-weight: 700; line-height: 1.1; padding: 40px 40px 0 40px; text-align: left; position: relative; z-index: 2;">
+    По статистике <span class="orange">63% владельцев</span><br>ищут где оставить питомца на<br>время <span class="orange">командировок</span> или <span class="orange">отпусков</span>
+  </h2>
+  <!-- 6 chat screenshots — real images with Figma positions and sizes -->
+  <!-- Left column -->
+  <img src="./images/slide3-chat1.png" alt="Chat 1"
+       style="position: absolute; left: 40px; top: 200px; width: 238px; height: 176px;
+              object-fit: cover; border-radius: 16px;">
+  <img src="./images/slide3-chat3.png" alt="Chat 3"
+       style="position: absolute; left: 40px; top: 400px; width: 238px; height: 118px;
+              object-fit: cover; border-radius: 16px;">
+  <!-- Center column -->
+  <img src="./images/slide3-chat2.png" alt="Chat 2"
+       style="position: absolute; left: 302px; top: 200px; width: 238px; height: 259px;
+              object-fit: cover; border-radius: 16px;">
+  <img src="./images/slide3-chat6.png" alt="Chat 6"
+       style="position: absolute; left: 302px; top: 483px; width: 238px; height: 62px;
+              object-fit: cover; border-radius: 16px;">
+  <!-- Right column -->
+  <img src="./images/slide3-chat4.png" alt="Chat 4"
+       style="position: absolute; left: 564px; top: 200px; width: 238px; height: 150px;
+              object-fit: cover; border-radius: 16px;">
+  <img src="./images/slide3-chat5.png" alt="Chat 5"
+       style="position: absolute; left: 564px; top: 374px; width: 238px; height: 127px;
+              object-fit: cover; border-radius: 16px;">
+</div>
+
+<!-- ===================== SLIDE 5 — Передержка ===================== -->
+<div class="slide" style="padding: 40px 40px;">
+  <h2 class="heading-alt" style="font-size: 36px; font-weight: 700; line-height: 1.1; margin-bottom: 8px;">Передержка</h2>
+  <p style="font-size: 16px; color: #7A7A7A; font-weight: 600; margin-bottom: 32px;">питомец живёт у проверенного зоопомощника</p>
+
+  <div style="font-size: 20px; font-weight: 600; line-height: 1.2;">
+    <div style="display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #EEE;">
+      <span>Передержка кошки</span>
+      <span><span class="orange" style="font-weight: 700;">5 200 ₸</span> <span class="strike" style="font-size: 16px;">6 500 ₸</span> /сутки</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #EEE;">
+      <span>Передержка собаки без выгула</span>
+      <span><span class="orange" style="font-weight: 700;">6 000 ₸</span> <span class="strike" style="font-size: 16px;">7 500 ₸</span> /сутки</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #EEE;">
+      <span>Передержка 1–2 выгула</span>
+      <span><span class="orange" style="font-weight: 700;">7 600 ₸</span> <span class="strike" style="font-size: 16px;">9 500 ₸</span> /сутки</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; padding: 16px 0;">
+      <span>Передержка 3–4 выгула</span>
+      <span><span class="orange" style="font-weight: 700;">9 200 ₸</span> <span class="strike" style="font-size: 16px;">11 500 ₸</span> /сутки</span>
+    </div>
+  </div>
+
+  <div style="margin-top: 32px; background: #FFF5E6; border-radius: 16px; padding: 20px; text-align: center;">
+    <span style="font-size: 20px; font-weight: 700; color: #F26D00;">СКИДКА 20%</span>
+    <span style="font-size: 18px; font-weight: 600;"> — уже включена в цены для ваших сотрудников</span>
+  </div>
+</div>
+
+<!-- ===================== SLIDE 6 — Выгул и Зооняня ===================== -->
+<div class="slide" style="padding: 40px 40px;">
+  <h2 class="heading-alt" style="font-size: 36px; font-weight: 700; line-height: 1.1; margin-bottom: 8px;">Выгул и Зооняня</h2>
+  <p style="font-size: 16px; color: #7A7A7A; font-weight: 600; margin-bottom: 24px;">зоопомощник приезжает к вам</p>
+
+  <div style="display: flex; gap: 40px;">
+    <!-- Left: Выгул -->
+    <div style="flex: 1;">
+      <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 16px;">Выгул</h3>
+      <div style="font-size: 18px; font-weight: 600; line-height: 1.2;">
+        <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #EEE;">
+          <span>30 минут</span>
+          <span><span class="orange" style="font-weight: 700;">3 600 ₸</span> <span class="strike" style="font-size: 14px;">4 500 ₸</span></span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #EEE;">
+          <span>1 час</span>
+          <span><span class="orange" style="font-weight: 700;">4 240 ₸</span> <span class="strike" style="font-size: 14px;">5 300 ₸</span></span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #EEE;">
+          <span>+ Няня 30+30 мин</span>
+          <span><span class="orange" style="font-weight: 700;">4 240 ₸</span> <span class="strike" style="font-size: 14px;">5 300 ₸</span></span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 12px 0;">
+          <span>+ Няня 1ч+30 мин</span>
+          <span><span class="orange" style="font-weight: 700;">5 200 ₸</span> <span class="strike" style="font-size: 14px;">6 500 ₸</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Зооняня -->
+    <div style="flex: 1;">
+      <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 16px;">Зооняня</h3>
+      <div style="font-size: 18px; font-weight: 600; line-height: 1.2;">
+        <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #EEE;">
+          <span>1 час (визит)</span>
+          <span><span class="orange" style="font-weight: 700;">3 920 ₸</span> <span class="strike" style="font-size: 14px;">4 900 ₸</span></span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #EEE;">
+          <span>Дневная</span>
+          <span><span class="orange" style="font-weight: 700;">12 000 ₸</span> <span class="strike" style="font-size: 14px;">15 000 ₸</span></span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 12px 0;">
+          <span>Дневная + выгулы</span>
+          <span><span class="orange" style="font-weight: 700;">13 600 ₸</span> <span class="strike" style="font-size: 14px;">17 000 ₸</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 24px; display: flex; gap: 16px;">
+    <div style="flex: 1; background: #FFF5E6; border-radius: 12px; padding: 14px; text-align: center;">
+      <span style="font-size: 16px; font-weight: 700; color: #F26D00;">Доп. питомец: −50%</span>
+    </div>
+    <div style="flex: 1; background: #FFF5E6; border-radius: 12px; padding: 14px; text-align: center;">
+      <span style="font-size: 16px; font-weight: 700; color: #F26D00;">Трансфер: 2 000 ₸</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SLIDE 7 — Contact ===================== -->
+<div class="slide" style="overflow: hidden;">
+  <!-- Cocker spaniel — behind content (z-index: 1) -->
+  <!-- Figma: x=933 y=-140 w=751 h=891 rotation=-180 (flipped), relative to frame origin -->
+  <!-- In frame coords: the image starts at right edge and extends beyond. After rotation-180, it flips. -->
+  <!-- Visible area: roughly right 60% of slide, from top to beyond bottom -->
+  <img src="./images/slide19-dog.png" alt="Cocker spaniel"
+       style="position: absolute; right: -60px; top: -80px; width: 620px; height: 735px;
+              object-fit: cover; z-index: 1;">
+
+  <!-- Content — in front of dog (z-index: 2) -->
+  <div style="position: absolute; left: 40px; top: 40px; z-index: 2;">
+    <h2 class="heading-alt" style="font-size: 36px; font-weight: 700; line-height: 1.3; margin-bottom: 16px;">Благодарим за внимание!</h2>
+    <p style="font-size: 18px; font-weight: 600; color: #212121; line-height: 1.3;">
+      Не будь как тот самый коллега,<br>который включает свет - напиши нам :)
+    </p>
+  </div>
+
+  <div style="position: absolute; left: 40px; top: 226px; z-index: 2;">
+    <span style="font-size: 18px; color: #7A7A7A; font-weight: 600; line-height: 1.3;">WhatsApp</span>
+  </div>
+  <div style="position: absolute; left: 40px; top: 257px; z-index: 2;">
+    <span style="font-size: 28px; font-weight: 700; color: #F26D00; line-height: 1.2;">+7 777 811 00 96</span>
+  </div>
+
+  <!-- QR Code — Figma: x=40, y=315, w=240, h=240 -->
+  <img src="./images/slide19-qr.png" alt="WhatsApp QR"
+       style="position: absolute; left: 40px; top: 315px; width: 240px; height: 240px;
+              object-fit: contain; z-index: 2;">
+</div>
+
+</body>
+</html>
