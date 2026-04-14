@@ -157,19 +157,19 @@ body { background: #E8E8E8; font-family: 'Montserrat', sans-serif; color: #21212
       Нужно присмотреть за питомцем, а <span style="color: #F26D00;">доверить некому?</span>
     </h2>
     <div style="font-size: 16px; line-height: 1.35;">
-      <div style="display: flex; align-items: flex-start; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid rgba(130,59,12,0.15);">
+      <div style="display: flex; align-items: center; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid rgba(130,59,12,0.15);">
         <img src="./images/icon-cat.png" style="width: 32px; height: 32px; flex-shrink: 0;">
         <div><span style="font-weight: 700;">Чувство вины</span><br><span style="font-weight: 500; color: #7A7A7A;">Тяжело уезжать — питомец остаётся дома один и скучает без вас</span></div>
       </div>
-      <div style="display: flex; align-items: flex-start; gap: 12px; padding: 14px 0; border-bottom: 1px solid rgba(130,59,12,0.15);">
+      <div style="display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid rgba(130,59,12,0.15);">
         <img src="./images/icon-cat.png" style="width: 32px; height: 32px; flex-shrink: 0;">
         <div><span style="font-weight: 700;">Стресс от зоогостиниц</span><br><span style="font-weight: 500; color: #7A7A7A;">Не хотите оставлять питомца в клетке — важна домашняя атмосфера</span></div>
       </div>
-      <div style="display: flex; align-items: flex-start; gap: 12px; padding: 14px 0; border-bottom: 1px solid rgba(130,59,12,0.15);">
+      <div style="display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid rgba(130,59,12,0.15);">
         <img src="./images/icon-cat.png" style="width: 32px; height: 32px; flex-shrink: 0;">
         <div><span style="font-weight: 700;">Страх навредить</span><br><span style="font-weight: 500; color: #7A7A7A;">Боитесь, что о питомце не позаботятся должным образом</span></div>
       </div>
-      <div style="display: flex; align-items: flex-start; gap: 12px; padding-top: 14px;">
+      <div style="display: flex; align-items: center; gap: 12px; padding-top: 14px;">
         <img src="./images/icon-cat.png" style="width: 32px; height: 32px; flex-shrink: 0;">
         <div><span style="font-weight: 700;">Тревога за безопасность</span><br><span style="font-weight: 500; color: #7A7A7A;">Страшно доверить питомца незнакомцу без проверок и гарантий</span></div>
       </div>
@@ -247,12 +247,16 @@ body { background: #E8E8E8; font-family: 'Montserrat', sans-serif; color: #21212
 </div>
 
 <!-- ===================== SLIDE — Нам доверили ===================== -->
-<div class="slide" style="padding: 32px 40px; overflow: hidden;">
-  <h2 class="heading-alt" style="font-size: 36px; font-weight: 700; line-height: 1.15;">
-    Нам доверили своих питомцев
-  </h2>
-  <p style="font-size: 20px; font-weight: 700; color: #F26D00; margin-bottom: 16px;">более 1500+ клиентов и продолжают возвращаться</p>
-  <img src="./images/reviews-collage.png" alt="Отзывы клиентов" style="width: 100%; height: auto; object-fit: contain;">
+<div class="slide" style="position: relative; overflow: hidden;">
+  <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;">
+    <img src="./images/reviews-collage.png" alt="Отзывы клиентов" style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
+  </div>
+  <div style="position: absolute; top: 0; left: 0; right: 0; padding: 36px 40px; background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 70%, rgba(255,255,255,0) 100%);">
+    <h2 class="heading-alt" style="font-size: 36px; font-weight: 700; line-height: 1.15;">
+      Нам доверили своих питомцев
+    </h2>
+    <p style="font-size: 20px; font-weight: 700; color: #F26D00;">более 1500+ клиентов и продолжают возвращаться</p>
+  </div>
 </div>
 
 <!-- ===================== SLIDE — Проверка ===================== -->
