@@ -5,8 +5,8 @@ from urllib.parse import quote
 PHONE = "77778110096"
 
 targets = [
-    ("qr-wa-bereke-client", "Здравствуйте! Я клиент Bereke Bank — хочу узнать об услугах для питомца"),
-    ("qr-wa-bereke-employee", "Здравствуйте! Я сотрудник Bereke Bank — хочу узнать об услугах для питомца"),
+    ("qr-wa-bereke-client", "Здравствуйте! Я клиент Bereke Bank, хочу заказать услугу"),
+    ("qr-wa-bereke-employee", "Здравствуйте! Я сотрудник Bereke Bank, хочу заказать услугу"),
 ]
 
 for name, msg in targets:
