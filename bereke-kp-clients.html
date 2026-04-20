@@ -59,13 +59,13 @@ body { background: #E8E8E8; font-family: 'Montserrat', sans-serif; color: #21212
 
   <!-- Text area — in front of dog (z-index: 2) -->
   <div style="position: absolute; left: 40px; top: 40px; width: 445px; z-index: 2;">
-    <!-- Logos: Paws × Bereke Bank -->
+    <!-- Logos: Paws × Bereke Bank (стандартный шаблон как в bereke-kp-clients.html) -->
     <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 56px;">
       <img src="./images/logo-paws.png" alt="Paws" style="height: 40px; width: auto; object-fit: contain; display: block;">
       <span style="font-size: 22px; color: #7A7A7A; font-weight: 600;">×</span>
       <img src="./images/bereke-logo.png" alt="Bereke Bank" style="height: 44px; width: auto; object-fit: contain; display: block;">
     </div>
-    <h1 class="heading-alt" style="font-size: 40px; font-weight: 700; line-height: 1.1; margin-bottom: 18px;">
+    <h1 class="heading-alt" style="font-size: 40px; font-weight: 700; line-height: 1.1; margin-bottom: 20px;">
       Скидки на заботу<br>о питомцах для клиентов<br><span style="color: #F26D00;">Bereke Bank</span>
     </h1>
     <p style="font-size: 20px; font-weight: 600; line-height: 1.35; color: #212121;">
@@ -277,55 +277,38 @@ body { background: #E8E8E8; font-family: 'Montserrat', sans-serif; color: #21212
 <!-- ===================== SLIDE — Как получить скидку ===================== -->
 <div class="slide" style="padding: 40px;">
   <h2 class="heading-alt" style="font-size: 36px; font-weight: 700; line-height: 1.15; margin-bottom: 8px;">
-    Как получить <span style="color: #F26D00;">скидку</span>
+    Скидка активируется в <span style="color: #F26D00;">один клик</span>
   </h2>
   <p style="font-size: 16px; color: #7A7A7A; font-weight: 600; margin-bottom: 28px;">
-    2 способа — выбирайте удобный
+    Никаких промокодов — просто нажмите и напишите
   </p>
 
-  <div style="display: flex; gap: 20px; align-items: stretch;">
-    <!-- Method 1: QR from banner -->
-    <div style="flex: 1; background: #FFF5E6; border-radius: 20px; padding: 28px 24px; display: flex; flex-direction: column;">
-      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
-        <div style="width: 56px; height: 56px; background: #fff; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="3" y="3" width="7" height="7" rx="1" stroke="#F26D00" stroke-width="2"/>
-            <rect x="14" y="3" width="7" height="7" rx="1" stroke="#F26D00" stroke-width="2"/>
-            <rect x="3" y="14" width="7" height="7" rx="1" stroke="#F26D00" stroke-width="2"/>
-            <rect x="14" y="14" width="3" height="3" fill="#F26D00"/>
-            <rect x="18" y="14" width="3" height="3" fill="#F26D00"/>
-            <rect x="14" y="18" width="3" height="3" fill="#F26D00"/>
-            <rect x="18" y="18" width="3" height="3" fill="#F26D00"/>
-          </svg>
-        </div>
-        <span style="font-size: 22px; font-weight: 700; color: #F26D00;">QR-код</span>
-      </div>
-      <div style="font-size: 17px; font-weight: 700; margin-bottom: 8px;">Из баннера в приложении Bereke</div>
-      <div style="font-size: 15px; font-weight: 500; color: #7A7A7A; line-height: 1.4;">
-        Откройте приложение Bereke Bank, найдите баннер Paws и отсканируйте QR-код. Скидка применится автоматически.
+  <div style="display: flex; flex-direction: column; gap: 18px;">
+    <div style="display: flex; align-items: center; gap: 18px; background: #FFF5E6; border-radius: 16px; padding: 18px 22px;">
+      <div style="width: 52px; height: 52px; background: #F26D00; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; font-family: 'Montserrat Alternates'; flex-shrink: 0;">1</div>
+      <div>
+        <div style="font-size: 18px; font-weight: 700;">Видите баннер Paws</div>
+        <div style="font-size: 15px; font-weight: 500; color: #7A7A7A; margin-top: 2px;">В приложении Bereke Bank или в постах Instagram банка</div>
       </div>
     </div>
-
-    <!-- Method 2: UTM link -->
-    <div style="flex: 1; background: #FFF5E6; border-radius: 20px; padding: 28px 24px; display: flex; flex-direction: column;">
-      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
-        <div style="width: 56px; height: 56px; background: #fff; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10 14a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.72" stroke="#F26D00" stroke-width="2" stroke-linecap="round"/>
-            <path d="M14 10a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.72-1.72" stroke="#F26D00" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <span style="font-size: 22px; font-weight: 700; color: #F26D00;">Ссылка</span>
+    <div style="display: flex; align-items: center; gap: 18px; background: #FFF5E6; border-radius: 16px; padding: 18px 22px;">
+      <div style="width: 52px; height: 52px; background: #F26D00; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; font-family: 'Montserrat Alternates'; flex-shrink: 0;">2</div>
+      <div>
+        <div style="font-size: 18px; font-weight: 700;">Нажимаете на баннер</div>
+        <div style="font-size: 15px; font-weight: 500; color: #7A7A7A; margin-top: 2px;">Открывается WhatsApp с уже готовым сообщением</div>
       </div>
-      <div style="font-size: 17px; font-weight: 700; margin-bottom: 8px;">По ссылке из баннера или Instagram</div>
-      <div style="font-size: 15px; font-weight: 500; color: #7A7A7A; line-height: 1.4;">
-        Нажмите на баннер в приложении или пост в Instagram Bereke Bank — скидка зафиксируется по переходу.
+    </div>
+    <div style="display: flex; align-items: center; gap: 18px; background: #FFF5E6; border-radius: 16px; padding: 18px 22px;">
+      <div style="width: 52px; height: 52px; background: #F26D00; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; font-family: 'Montserrat Alternates'; flex-shrink: 0;">3</div>
+      <div>
+        <div style="font-size: 18px; font-weight: 700;">Отправляете</div>
+        <div style="font-size: 15px; font-weight: 500; color: #7A7A7A; margin-top: 2px;">Получаете <span style="color: #F26D00; font-weight: 700;">20% на первый заказ</span> и <span style="color: #F26D00; font-weight: 700;">10% на все последующие</span></div>
       </div>
     </div>
   </div>
 
-  <div style="margin-top: 22px; background: #fff; border: 2px dashed #FFC174; border-radius: 14px; padding: 14px 20px; text-align: center;">
-    <span style="font-size: 15px; font-weight: 600; color: #7A7A7A;">Вы всегда можете проверить свой статус — просто укажите, что вы клиент Bereke Bank при заказе</span>
+  <div style="margin-top: 20px; background: #fff; border: 2px dashed #FFC174; border-radius: 14px; padding: 12px 18px; text-align: center;">
+    <span style="font-size: 14px; font-weight: 600; color: #7A7A7A;">Paws узнаёт вас по номеру телефона — скидка сохраняется навсегда</span>
   </div>
 </div>
 
@@ -335,11 +318,11 @@ body { background: #E8E8E8; font-family: 'Montserrat', sans-serif; color: #21212
     <div style="font-size: 18px; color: #7A7A7A; font-weight: 600; margin-bottom: 16px; letter-spacing: 1px; text-transform: uppercase;">
       Период акции
     </div>
-    <h2 class="heading-alt" style="font-size: 56px; font-weight: 700; line-height: 1.05; margin-bottom: 12px;">
-      Действует <span style="color: #F26D00;">до 1 мая<br>2027 года</span>
+    <h2 class="heading-alt" style="font-size: 54px; font-weight: 700; line-height: 1.05; margin-bottom: 14px;">
+      Действует <span style="color: #F26D00;">до 31 июля<br>2027 года</span>
     </h2>
     <p style="font-size: 20px; font-weight: 600; color: #7A7A7A; line-height: 1.4; max-width: 620px; margin: 0 auto 36px auto;">
-      Успейте воспользоваться скидкой для себя и своего питомца — более года на заботу по специальной цене
+      Успейте воспользоваться скидкой для своего питомца — более года на заботу по специальной цене
     </p>
 
     <div style="display: flex; gap: 20px; justify-content: center; max-width: 620px; margin: 0 auto;">
