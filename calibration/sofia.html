@@ -285,7 +285,7 @@ function renderWelcome() {
           <li>⏱ Минимум 20 секунд на пару — иначе кнопка «Дальше» заблокирована.</li>
           <li>💬 Комментарий <strong>обязателен на FAIL</strong>: 1-2 строки почему.</li>
           <li>💾 Прогресс сохраняется автоматически. Можно паузу + вернуться позже.</li>
-          <li>📤 В конце — «Экспорт» → файл .json → отправить Эльбику.</li>
+          <li>📤 В конце — «Экспорт» → файл .json → отправить ответ.</li>
         </ul>
 
         <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mt-6">
@@ -507,7 +507,7 @@ function renderFinish() {
     actionPanel = `
       <div class="bg-emerald-50 border-2 border-emerald-300 rounded-xl p-6 mb-4 text-center">
         <div class="text-4xl mb-2">✅</div>
-        <h3 class="text-xl font-bold text-emerald-900 mb-1">Эльбик получил твой ответ</h3>
+        <h3 class="text-xl font-bold text-emerald-900 mb-1">Ответ получен</h3>
         <p class="text-sm text-emerald-800">Отправлено ${new Date(submittedAt).toLocaleString('ru-RU')} · файл <code class="bg-emerald-100 px-1.5 py-0.5 rounded">${escapeHtml(submitState.saved_as || '—')}</code></p>
         <p class="text-sm text-emerald-800 mt-2">Можно закрыть вкладку. Спасибо! 🐾</p>
       </div>
@@ -519,7 +519,7 @@ function renderFinish() {
     actionPanel = `
       <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-4 text-center">
         <div class="text-4xl mb-2 animate-pulse">📡</div>
-        <h3 class="text-xl font-bold text-blue-900 mb-1">Отправляю Эльбику...</h3>
+        <h3 class="text-xl font-bold text-blue-900 mb-1">Отправляю ответ...</h3>
         <p class="text-sm text-blue-800">Если зависло > 30 секунд — попробуй ещё раз или скачай файл вручную</p>
       </div>
     `;
@@ -531,7 +531,7 @@ function renderFinish() {
           <div class="flex-1">
             <h3 class="text-lg font-bold text-amber-900 mb-1">Не удалось отправить автоматически</h3>
             <p class="text-sm text-amber-800 mb-3">Ошибка: <code class="bg-amber-100 px-1.5 py-0.5 rounded text-xs">${escapeHtml(submitState.error || 'unknown')}</code></p>
-            <p class="text-sm text-amber-900"><strong>Что делать:</strong> скачай файл ниже и отправь Эльбику в Telegram. Прогресс не теряется.</p>
+            <p class="text-sm text-amber-900"><strong>Что делать:</strong> скачай файл ниже и отправь в чат. Прогресс не теряется.</p>
           </div>
         </div>
       </div>
@@ -545,10 +545,10 @@ function renderFinish() {
     actionPanel = `
       <div class="bg-blue-50 border border-blue-200 rounded-lg p-5 mb-6">
         <h3 class="font-semibold text-blue-900 mb-2">📤 Готово к отправке</h3>
-        <p class="text-sm text-blue-900">Нажми кнопку ниже — твой ответ автоматически уйдёт Эльбику. Никаких файлов скачивать не нужно.</p>
+        <p class="text-sm text-blue-900">Нажми кнопку ниже — твой ответ автоматически сохранится автоматически. Никаких файлов скачивать не нужно.</p>
       </div>
       <div class="flex flex-col sm:flex-row gap-3">
-        <button onclick="onSubmit()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-4 rounded-xl shadow-sm transition text-lg">📤 Отправить Эльбику</button>
+        <button onclick="onSubmit()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-4 rounded-xl shadow-sm transition text-lg">📤 Отправить и завершить</button>
         <button onclick="State.data.current_index = 0; State.save(); render();" class="px-6 py-4 rounded-xl border border-stone-300 hover:bg-stone-100 transition text-stone-700 font-medium">↩️ Просмотреть пары</button>
       </div>
       <div class="mt-3 text-center">
@@ -587,7 +587,7 @@ function renderFinish() {
       ${actionPanel}
 
       <div class="mt-8 pt-6 border-t border-stone-200 text-xs text-stone-500 text-center">
-        Если что-то пошло не так — пиши Эльбику в Telegram. Прогресс в браузере сохраняется.
+        Если что-то пошло не так — пиши в чат. Прогресс в браузере сохраняется.
       </div>
     </div>
   `;
