@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paws Calibration · Test</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: -apple-system, "Segoe UI", system-ui, sans-serif; background: #fafaf9; }
+  .pair-card { transition: all 0.2s ease; }
+  .criterion-button { transition: all 0.15s ease; }
+  .criterion-button.selected-pass { background: #dcfce7; border-color: #16a34a; color: #15803d; }
+  .criterion-button.selected-fail { background: #fee2e2; border-color: #dc2626; color: #991b1b; }
+  .criterion-button.selected-na   { background: #f3f4f6; border-color: #9ca3af; color: #4b5563; }
+  .criterion-button:hover:not(.selected-pass):not(.selected-fail):not(.selected-na) { background: #f3f4f6; }
+  .progress-bar { transition: width 0.4s ease-out; }
+  .section-dot { transition: all 0.2s ease; }
+  .section-dot.complete { background: #10b981; }
+  .section-dot.current  { background: #3b82f6; transform: scale(1.4); }
+  .timer { font-variant-numeric: tabular-nums; }
+  details summary::-webkit-details-marker { display: none; }
+  details summary { cursor: pointer; }
+  details[open] > summary .chevron { transform: rotate(90deg); }
+  .chevron { transition: transform 0.15s ease; display: inline-block; }
+  .fade-in { animation: fadeIn 0.4s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  textarea:focus, input:focus { outline: 2px solid #3b82f6; outline-offset: 2px; }
+</style>
+</head>
+<body class="min-h-screen">
+
+<div id="app" class="max-w-5xl mx-auto p-4 sm:p-6"></div>
+
+<script>
+'use strict';
+
+// ============================================================
+// CONFIG
+// ============================================================
+
+const PAIRS = [{"id": 1, "client_msg": ">>Оплату получили, спасибо! София скоро с вами свяжется, вот также ее номер: [PHONE]\n \n \n👍", "manager_response": "Как приятно было прочитать ваш отзыв — спасибо ❤\nХотим рассказать о вашем опыте и показать пару кадров с вашим питомцем. Разрешите опубликовать отзыв и фото/видео у нас в соцсетях? 🐾", "service": "зооняня", "phase": "06_payment", "intent_class": "CARE", "source_date": "2025-12-11"}, {"id": 2, "client_msg": "Эти цены правильные?", "manager_response": "Добрый вечер!\nЭто базовые цены на услуги категории. На итоговую стоимость также могут влиять срочность заказа, выбранные даты и особенности питомца.\nТакже от 10/20/30 выгулов у нас до конца декабря предусмотрены скидки в 10/15/20% соответственно", "service": "выгул", "phase": "01_qualification", "intent_class": "GREETING", "source_date": "2025-12-07"}, {"id": 3, "client_msg": "Ужас, очень дорого\nМы подумаем насчет ваших услуг", "manager_response": "Хорошо! Передали Ваши контакты Айнур, она свяжется с Вами в ближайшее время🐾\n[PHONE]", "service": "выгул", "phase": "06_payment", "intent_class": "OBJECTION", "source_date": "2025-07-26"}, {"id": 4, "client_msg": "Добрый день! Не переживайте, увидите! Мне очень понравилась помощь со стороны Впшего сотрудника - Аяны. Я планирую снова оьращаться за ее помощью. Но уже в Новом Году.\n\nВы делаете важное дело! Успехов Вам!", "manager_response": "Рады помочь! Благодарим за теплые слова и будем рады снова быть полезны 🧡", "service": "зооняня", "phase": "01_qualification", "intent_class": "GREETING", "source_date": "2025-12-12"}, {"id": 5, "client_msg": "Да, уточните, пожалуйста!", "manager_response": "Аяна, сообщила, что с радостью сможет навещать Паскаля в указанные вами даты🫶🏻\n\nЕсли вас устраивает, то можем ли мы отправить ссылку для оплаты, а после передать заказ Аяне и связать вас😊", "service": "зооняня", "phase": "06_payment", "intent_class": "GREETING", "source_date": "2025-06-05"}, {"id": 6, "client_msg": ">>Доброе утро! Отлично, спасибо Вам!  Передаем Ваши контакты Аяне, она свяжется с Вами в ближайшее время🫶\n \n \n❤️", "manager_response": "Добрый вечер! Мы можем перевыложить заявку и вернуться с актуальными анкетами завтра в 13:00?❤️", "service": "зооняня", "phase": "07_post_order", "intent_class": "CARE", "source_date": "2025-05-17"}, {"id": 7, "client_msg": "Верно, но адрес другой, по адресу Самал 3 д 15к3", "manager_response": "Отлично☺️\n\n📋 Чтобы рассчитать стоимость, скопируйте анкету и впишите ответы:\n\n🧾 Базовые\n• Даты выгулов:\n• Время выгулов:\n• Сколько выгулов в день и их длительность:\n• Нужно мыть лапы и/или кормить:\n• Выезд за ключами (забрать/вернуть/не нужен):\n\n🩺 Здоровье\n• Дата последней вакцинации:\n• Даты последних обработок от паразитов:\n• Болел инфекциями за 12 мес:\n• Контактировал с инфицированными животными за 12 мес:\n• Другие особенности (здоровье, течка, другое):", "service": "выгул", "phase": "01_qualification", "intent_class": "SALES", "source_date": "2026-02-12"}, {"id": 8, "client_msg": ">>Здравствуйте! Это команда Paws. Мы давно не заботились о вашем хвостике — и нам грустно 🐾\n>>\n>>Дарим вам –25% на любую услугу по промокоду PAWS25.\n>>\n>>👇 Ваш промокод: PAWS25. Действует до 5 марта. Сохраните его и напишите нам, если планируете отъезд — мы подберём лучший вариант для вашего питомца ❤️\n \n \nДобрый день! Хотел бы сделать заказ по скидке -25%. \nКотоняна с 22.03 по 27.03\n22.03 - 1 визит (вечером)\n23.03 - 2 визита \n24.03 - 2 визита \n25.03 - 2 визита \n26.03 - 2 визита \n27.03 - 2 визита \n\nИтого 11 визитов. Можно узнать Карина сможет в эти даты?)\n\nИ ещё вопрос. Получится ли скорректировать даты по необходимости если окажется что нужно больше или меньше визитов или +-1 день?", "manager_response": "Добрый день! Отлично! Стоимость 11 визитов будет составлять 40 500 тг. со скидкой 25%. Уточним у Карины и вернемся с ответом 😊", "service": "зооняня", "phase": "02_pricing", "intent_class": "SALES", "source_date": "2026-03-05"}, {"id": 9, "client_msg": "А можно 60 взять?", "manager_response": "Да, конечно😊\nМожем Вам предоставить доп скидку в 10% за оформление 60 выгулов \nК оплате составит 195 304 тг💕\n\nПросим вас оплатить услугу по ссылке на онлайн-оплату. Счёт будет действителен в течение 3 часов с момента первого перехода по ссылке, оплатить можно только с устройства, с которого ссылка была открыта впервые. \n \n[URL]https://payment.paws.kz?id=47b3edb8-6286-40b0-ac79-41c27bc9d13d[/URL]\n\nПосле оплаты, пожалуйста, напишите нам 🐾", "service": "выгул", "phase": "06_payment", "intent_class": "GREETING", "source_date": "2025-05-31"}, {"id": 10, "client_msg": "Камилла,  когда пришлёте ссылку для оплаты?", "manager_response": "Благодарим за ожидание❤️\nПросим вас оплатить услугу по ссылке на онлайн-оплату. Счёт будет действителен в течение 3 часов с момента первого перехода по ссылке, оплатить можно только с устройства, с которого ссылка была открыта впервые. \n \n[URL]https://payment.paws.kz?id=c17c6406-ebcc-4441-9be7-f0ada1691918[/URL]\n\nПосле оплаты, пожалуйста, напишите нам 🐾", "service": "передержка", "phase": "06_payment", "intent_class": "SALES", "source_date": "2025-06-12"}, {"id": 11, "client_msg": "Хорошо! Тогда Дину ✨", "manager_response": "Просим вас оплатить услугу по ссылке на онлайн-оплату. Счёт будет действителен в течение 3 часов с момента первого перехода по ссылке, оплатить можно только с устройства, с которого ссылка была открыта впервые. \n \n[URL]https://payment.paws.kz?id=8e38b7fc-f31a-4b04-a445-98e73f6d259a[/URL]\n\nПосле оплаты, пожалуйста, напишите нам 🐾", "service": "зооняня", "phase": "06_payment", "intent_class": "GREETING", "source_date": "2025-05-12"}, {"id": 12, "client_msg": "Наверное, видео с обзором комнаты, где будут содержаться животные, и текст договора", "manager_response": "Благодарим за ответ! Фото условий содержания питомцев есть в анкетах зоопомощников, питомцы на передержке не ограничены одной комнатой, а проживают🫶🏻\nПо вашему пожеланию мы могли запросить у более понравившихся кандидатов видео-обзор квартиры\n\nТакже перед оказанием услуги заключается договор публичной оферты [URL]https://paws.kz/publicoffer[/URL]\nОн регламентирует ответственность всех сторон, в том числе зоопомощника во время оказания услуги.\n\nБудем рады быть полезными в будущем🧡🐾", "service": "передержка", "phase": "01_qualification", "intent_class": "SALES", "source_date": "2026-02-20"}, {"id": 13, "client_msg": "Здравствуйте 👋\nУслуга для вашего питомца подошла к концу 🐾\n\nНам очень важно ваше мнение. Расскажите, пожалуйста:\n\n✨ Всё ли вам понравилось в работе сервиса?\n\n✨ Как вам работа зоопомощника?\n\n✨ Как вы впервые узнали о нас?\nНапример: увидели рекламу или пост в Instagram, нашли нашу страницу/сайт через поиск (Google/Яндекс), увидели упоминание у блогера/в сторис у знакомых, вам порекомендовали друзья или коллеги — или любой другой способ (можно своими словами).\n\nВаши ответы помогут нам стать лучше и ещё больше радовать вас и ваших питомцев.\n\nВ знак благодарности за все ответы на вопросы выше с упоминанием имени зоопомощника мы подарим скидку на 700 тенге для следующего заказа! 🎁\n\nСпасибо, что выбрали нас! Ждём ваш отклик 💌", "manager_response": "Добрый вечер! Стоимость передержки на даты 03.02. - 07.02 будет составлять 48 800 тг. Мы можем оформить заявку, но, к сожалению, не можем гарантировать, что успеем найти зоопомощника в такие сжатые сроки. Подскажите, до скольки вам нужно отвезти Тимошу?", "service": "передержка", "phase": "02_pricing", "intent_class": "GREETING", "source_date": "2026-02-03"}, {"id": 14, "client_msg": "12 июня только вечером, в последний день (18 июня) только утро", "manager_response": "Стоимость 12 визитов зооняни на даты 12.06-18.06 составит 54 600 тг💕\n\nУточним у Арайлым сможет ли она взять ваш заказ и вернемся к вам с ответом чуть позже😊", "service": "зооняня", "phase": "02_pricing", "intent_class": "SALES", "source_date": "2025-06-08"}, {"id": 15, "client_msg": "Здравствуйте 👋\nУслуга для вашего питомца подошла к концу 🐾\n\nНам очень важно ваше мнение. Расскажите, пожалуйста:\n✨ Всё ли вам понравилось в работе сервиса?\n✨ Как вам работа зоопомощника?\n✨ Как вы узнали о нас?\n\nВаши ответы помогут нам стать лучше и ещё больше радовать вас и ваших питомцев.\n\nВ знак благодарности за вашу обратную связь мы подарим промокод на 700 тенге для следующего заказа! 🎁\n\nСпасибо, что выбрали нас! Ждём ваш отклик 💌", "manager_response": "4 900 х 7 = 34 300 тг. \n34 300 х 1,05 (надбавка 15% - скидка 10% = надбавка 5%) = 36 015 тг. \nДалее стоимость округляется до сотни. \n\nЖду ответ от руководства, вернусь к вам чуть позже 🙌", "service": "зооняня", "phase": "02_pricing", "intent_class": "GREETING", "source_date": "2025-12-12"}, {"id": 16, "client_msg": ">>Это Paws.kz 🐾 Уезжаете или заняты на работе?\n>>У нас передержка, зооняня, выгул - с фотоотчётами и без клеток. Дарим вам скидку:\n>>\n>>• Передержка/няня — 10% от 10 дней, 15% от 20 дней, 20% от 30 дней\n>>• Выгул — 10% от 10 выгулов, 15% от 20 выгулов, 20% от 30 выгулов\n>>\n>>Алматы / Астана. Ответьте «СКИДКА», подберём зоопомощника и забронируем за вами цены\n \n \nДобрый день \nКакие у вас сейчас расценки на выгулы собак?", "manager_response": "Здравствуйте🧡\nМеня зовут Диана, и я являюсь менеджером сервиса заботы о питомцах Paws 🐾\n\nСтоимость выгула 30 мин - 4500 тг\nВыгул 1 час - 5300 тг\n\nВыгул 30 мин + мытье лап/кормление - 5300 тг\nВыгул 1 час + мытье лап/кормление - 6500 тг", "service": "выгул", "phase": "02_pricing", "intent_class": "SALES", "source_date": "2025-09-26"}, {"id": 17, "client_msg": "Извините мне не больше не надо", "manager_response": "Хорошо, будем рады помочь в следующий раз 🧡", "service": "зооняня", "phase": "01_qualification", "intent_class": "SALES", "source_date": "2026-01-20"}, {"id": 18, "client_msg": "Вы можете сразу написать то что даты не так важно", "manager_response": "Да, мы укажем в заявке, что график гибкий, но для оформления нужно указать хотя бы примерные даты. Оформляем заявку и до 18:00 вернусь к вам с анкетами зоопомощников 🙌", "service": "выгул", "phase": "01_qualification", "intent_class": "SALES", "source_date": "2025-11-17"}, {"id": 19, "client_msg": ">>Спасибо большое за ваш отзыв , мы очень рады что были полезны!😍 ❤️\n>>\n>>Можем ли мы опубликовать его в нашем инстаграме вместе с фото и видео с услуги для продвижения?🐾\n \n \nЗдравствуйте, конечно", "manager_response": "Приветствуем вас! 🐾\n\nСпасибо за обращение. Мы находимся вне рабочего пространства в данный момент. Однако ваш запрос очень важен для нас, и мы уделим ему должное внимание, как только вернёмся. Наша команда будет доступна для ответа с 09:00 до 20:00. Мы ценим ваше терпение и готовы помочь вам в ближайшее время!", "service": "выгул", "phase": "07_post_order", "intent_class": "CARE", "source_date": "2025-05-21"}, {"id": 20, "client_msg": "Хорошо, а когда можно увезти животных", "manager_response": "Вы хотели бы уточнить во сколько можно будет забрать с передержки 2 ноября?☺️", "service": "передержка", "phase": "01_qualification", "intent_class": "SALES", "source_date": "2025-10-24"}, {"id": 21, "client_msg": "Большое спасибо Софии. Контакт с собакой установлен с первой прогулки, несмотря на весьма вредный характер моего питомца. Собака каждый раз радовалась приходу Софии, с прогулок возвращалась уставшая, но довольная. Рекомендую как надёжную помощницу для прогулок с собакой и очень приятного в общении человека.", "manager_response": "Спасибо большое за ваш отзыв , мы очень рады что были полезны!😍 ❤️\n\nМожем ли мы опубликовать его в нашем инстаграме вместе с фото и видео с услуги для продвижения?🐾", "service": "выгул", "phase": "07_post_order", "intent_class": "CARE", "source_date": "2025-05-19"}, {"id": 22, "client_msg": "Спасибо, я подумаю, и напишу в понедельник", "manager_response": "Хорошо, будем очень ждать Вашего решения❤️\nВ случае вопросов мы всегда тут!", "service": "выгул", "phase": "07_post_order", "intent_class": "CARE", "source_date": "2025-05-02"}, {"id": 23, "client_msg": ">>Оплату получили, благодарим❤️\n>>С вами свяжется Анна в ближайшее время, также её контакты [PHONE]\n>>\n>>Также свяжем Анну с Ариной, чтобы скоординировать их по передаче Тимофея🫶🏻\n \n \n❤️", "manager_response": "Также подскажите пожалуйста вы Тимофея в переноске передавали? Она осталась у Арины?😊", "service": "передержка", "phase": "06_payment", "intent_class": "SALES", "source_date": "2026-01-06"}, {"id": 24, "client_msg": "Спасибо! Я просмотрю их анкеты и постараюсь завтра-послезавтра выбрать, а также предоставить более подробную характеристику для котов (постараюсь учесть как можно больше нюансов), чтобы было лучшее представление", "manager_response": "Да, конечно, мы будем очень ждать❤️", "service": "передержка", "phase": "07_post_order", "intent_class": "CARE", "source_date": "2025-05-12"}, {"id": 25, "client_msg": ">>Передачу ключей можете произвести сами, доставив до зоопомощника, либо зоопомощник может заехать за ними до начала оказания услуги, оплата за выезд ключей составит 1500 тг\n>>Либо также можете отправить курьером ключи\n \n \nА ну отлично тогда лучше чтобы заехал думаю где то к часу было бы отлично , потому что нужно объяснять как зайти в подъезд", "manager_response": "Хорошо, можем указать в заявке, что нужен сбор ключей в 13:00 09.05🤗\n\nДля формирования заявки просим указать:\n\nИмя питомца \nВозраст питомца \nВаш адрес \nОставался ли питомец с малознакомым человеком? Как он себя вёл?\nЕсть ли ветпаспорт, обработка от паразитов (клещи, блохи, гельминты), кастрация/стерилизация?\nПредоставите ли намордник, пакеты для уборки, лакомства и водичку для выгула? \nФото питомца", "service": "выгул", "phase": "06_payment", "intent_class": "SALES", "source_date": "2025-05-08"}, {"id": 26, "client_msg": "Здравствуйте,\nМне нужно няня в пятницу вечером 27.06 и субботу утром 28.06 на эту неделю. Либо Камила, либо Рамина пожалуйста!", "manager_response": "Добрый день❤️\nДа, конечно \nУточним у девочек и вернемся к вам с ответом🫶🏻", "service": "зооняня", "phase": "01_qualification", "intent_class": "GREETING", "source_date": "2025-06-24"}, {"id": 27, "client_msg": "Здравствуйте 👋\nУслуга для вашего питомца подошла к концу 🐾\n\nНам очень важно ваше мнение. Расскажите, пожалуйста:\n✨ Всё ли вам понравилось в работе сервиса?\n✨ Как вам работа зоопомощника?\n✨ Чем вы кормите своего питомца?\n✨ Как вы узнали о нас?\n\nВаши ответы помогут нам стать лучше и ещё больше радовать вас и ваших питомцев.\n\nВ знак благодарности за все ответы на вопросы выше с упоминанием имени зоопомощника мы подарим *скидку на 700 тенге для следующего заказа! 🎁*\n\nСпасибо, что выбрали нас! Ждём ваш отклик 💌", "manager_response": "Привет! Это команда Paws. Заметили, что вы давно к нам не обращались, и соскучились по вашему питомцу 😊\n\nСкоро весенние праздники, и мы хотим снова быть полезными. Дарим 3000 ₸ на все наши услуги при заказе от 9000 ₸.\n\n👉 Ваш промокод: ТЕПЛО. Он действует до 31 марта. Напишите нам, когда захотите забронировать зоопомощника!", "service": "выгул", "phase": "02_pricing", "intent_class": "GREETING", "source_date": "2026-02-23"}, {"id": 28, "client_msg": "Спасибо! Посмотрели анкеты, мы бы с Диной по сотрудничали)", "manager_response": "Приветствуем вас! 🐾\n\nСпасибо за обращение. Мы находимся вне рабочего пространства в данный момент. Однако ваш запрос очень важен для нас, и мы уделим ему должное внимание, как только вернёмся. Наша команда будет доступна для ответа с 09:00 до 20:00. Мы ценим ваше терпение и готовы помочь вам в ближайшее время!", "service": "передержка", "phase": "07_post_order", "intent_class": "CARE", "source_date": "2025-05-17"}, {"id": 29, "client_msg": "С 15 по 21 сентября", "manager_response": "Добрый день! Рады быть полезными для вас снова🧡\n\nСтоимость 7 дней передержки для Расти с учетом скидки составит 44 800 тг\n\nМожем ли мы оформить заявку для поиска зоопомощника?", "service": "передержка", "phase": "02_pricing", "intent_class": "GREETING", "source_date": "2025-09-06"}, {"id": 30, "client_msg": "Здравствуйте 👋\nУслуга для вашего питомца подошла к концу 🐾\n\nНам очень важно ваше мнение. Расскажите, пожалуйста:\n\n✨ Всё ли вам понравилось в работе сервиса?\n\n✨ Как вам работа зоопомощника?\n\n✨ Как вы впервые узнали о нас?\nНапример: увидели рекламу или пост в Instagram, нашли нашу страницу/сайт через поиск (Google/Яндекс), увидели упоминание у блогера/в сторис у знакомых, вам порекомендовали друзья или коллеги — или любой другой способ (можно своими словами).\n\nВаши ответы помогут нам стать лучше и ещё больше радовать вас и ваших питомцев.\n\nВ знак благодарности за все ответы на вопросы выше с упоминанием имени зоопомощника мы подарим скидку на 700 тенге для следующего заказа! 🎁\n\nСпасибо, что выбрали нас! Ждём ваш отклик 💌", "manager_response": "Благодарим за чудесный отзыв 🧡 Подскажите, можем опубликовать его в соц. сетях с кадрами вашего питомца? 🙌", "service": "выгул", "phase": "02_pricing", "intent_class": "GREETING", "source_date": "2026-02-17"}];
+const ANNOTATOR = "Test";
+const N_PAIRS = 30;
+const SUBMIT_ENDPOINT = "https://opening-file-deputy-sufficiently.trycloudflare.com/api/calibration/submit";  // POST {endpoint}/{annotator_lower}
+const SUBMIT_TOKEN = "cal_2026_04_e9f3a8b1c4d62075";       // X-Calibration-Token header
+const SECTION_SIZE = 6; // 5 sections of 6 pairs (or N/SECTION_SIZE rounded up)
+const N_SECTIONS = Math.ceil(N_PAIRS / SECTION_SIZE);
+const MIN_VIEW_SECONDS = 20;
+
+const CRITERIA = [
+  {
+    id: "anketa_progression",
+    title: "Анкета двигается?",
+    question: "Менеджер двигает диалог к закрытию или топчется?",
+    pass_example: "Клиент новый → менеджер задал имя питомца ИЛИ city ИЛИ даты (любой следующий шаг)",
+    fail_example: "Менеджер третий раз спрашивает «какой питомец?» хотя клиент уже сказал",
+    na_example: "Анкета уже полностью заполнена в предыдущих turns"
+  },
+  {
+    id: "persona_consistency",
+    title: "Тон менеджера (Диана / Анна / Иван)",
+    question: "Тёплый, по-русски, как реальный менеджер? НЕ корпоративный, НЕ робот?",
+    pass_example: "«Какая милая собачка! Конечно поможем. Как зовут вашего пушистика?»",
+    fail_example: "«Согласно нашим стандартам обслуживания…» (корп) ИЛИ «Я ИИ-ассистент» (robot)",
+    na_example: "Реакция на 1-словный ответ типа «ок» — тон сложно оценить"
+  },
+  {
+    id: "objection_handling",
+    title: "Возражение отработано?",
+    question: "Если клиент возразил («дорого / подумаю / сравниваю») — менеджер отработал или просто повторил цену?",
+    pass_example: "Клиент «дорого» → манагер «Понимаю. У нас вакцинация-чек + страховка ст.329. Альтернатива за 6500?»",
+    fail_example: "Клиент «дорого» → манагер «Цена 9500» (просто повторил)",
+    na_example: "Возражения в этом turn не было"
+  },
+  {
+    id: "close_attempt",
+    title: "Попытка закрыть готового",
+    question: "Клиент явно готов («давайте оформим / беру») — менеджер двинул к оплате?",
+    pass_example: "«давайте оформим» → «Скиньте паспорт питомца + адрес, отправлю Каспи»",
+    fail_example: "«беру» → «А когда удобно?» (упустил готового)",
+    na_example: "Клиент не выразил готовность платить"
+  },
+  {
+    id: "goal_completion",
+    title: "Цель этого turn достигнута?",
+    question: "Что-то полезное произошло? (deal closed / info collected / objection resolved / next step)",
+    pass_example: "Клиент спросил цену → манагер назвал цену + предложил следующий шаг",
+    fail_example: "Клиент задал вопрос → манагер пожелал хорошего дня (ничего не достиг)",
+    na_example: "Turn чисто organisational («сейчас гляну»)"
+  }
+];
+
+// ============================================================
+// STATE
+// ============================================================
+
+const STORAGE_KEY = "paws_calibration_state_v1";
+
+const State = {
+  data: null,
+
+  init() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        this.data = JSON.parse(saved);
+        // Sanity check pair count + annotator match
+        if (this.data.n_pairs !== N_PAIRS || this.data.annotator !== ANNOTATOR) {
+          throw new Error("State mismatch");
+        }
+      } catch (e) {
+        console.warn("Reset state:", e.message);
+        this.reset();
+      }
+    } else {
+      this.reset();
+    }
+  },
+
+  reset() {
+    this.data = {
+      version: 1,
+      annotator: ANNOTATOR,
+      n_pairs: N_PAIRS,
+      started_at: null,
+      completed_at: null,
+      current_index: 0,
+      labels: {},      // {pair_id: {criterion_id: PASS|FAIL|N/A, confidence: 1-3, comment: "", time_spent_s: number}}
+      view_started_at: {} // {pair_id: timestamp}
+    };
+    this.save();
+  },
+
+  save() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
+  },
+
+  start() {
+    if (!this.data.started_at) {
+      this.data.started_at = Date.now();
+      this.save();
+    }
+  },
+
+  setLabel(pairId, criterionId, value) {
+    if (!this.data.labels[pairId]) this.data.labels[pairId] = { criteria: {}, confidence: null, comment: "", time_spent_s: 0 };
+    this.data.labels[pairId].criteria[criterionId] = value;
+    this.save();
+  },
+
+  setConfidence(pairId, level) {
+    if (!this.data.labels[pairId]) this.data.labels[pairId] = { criteria: {}, confidence: null, comment: "", time_spent_s: 0 };
+    this.data.labels[pairId].confidence = level;
+    this.save();
+  },
+
+  setComment(pairId, comment) {
+    if (!this.data.labels[pairId]) this.data.labels[pairId] = { criteria: {}, confidence: null, comment: "", time_spent_s: 0 };
+    this.data.labels[pairId].comment = comment;
+    this.save();
+  },
+
+  recordView(pairId) {
+    this.data.view_started_at[pairId] = Date.now();
+    this.save();
+  },
+
+  recordTimeSpent(pairId) {
+    if (this.data.view_started_at[pairId]) {
+      const seconds = Math.round((Date.now() - this.data.view_started_at[pairId]) / 1000);
+      const existing = this.data.labels[pairId] || { criteria: {}, confidence: null, comment: "", time_spent_s: 0 };
+      existing.time_spent_s = (existing.time_spent_s || 0) + seconds;
+      this.data.labels[pairId] = existing;
+      delete this.data.view_started_at[pairId];
+      this.save();
+    }
+  },
+
+  isPairComplete(pairId) {
+    const label = this.data.labels[pairId];
+    if (!label) return false;
+    if (!label.confidence) return false;
+    if (Object.keys(label.criteria).length !== CRITERIA.length) return false;
+    // If any FAIL → comment required
+    const hasFail = Object.values(label.criteria).some(v => v === "FAIL");
+    if (hasFail && (!label.comment || label.comment.trim().length < 3)) return false;
+    return true;
+  },
+
+  countComplete() {
+    return PAIRS.filter(p => this.isPairComplete(p.id)).length;
+  },
+
+  goNext() {
+    if (this.data.current_index < N_PAIRS - 1) {
+      this.data.current_index += 1;
+      this.save();
+      return true;
+    }
+    return false;
+  },
+
+  goPrev() {
+    if (this.data.current_index > 0) {
+      this.data.current_index -= 1;
+      this.save();
+      return true;
+    }
+    return false;
+  },
+
+  jumpTo(index) {
+    if (index >= 0 && index < N_PAIRS) {
+      this.data.current_index = index;
+      this.save();
+    }
+  },
+
+  finish() {
+    this.data.completed_at = Date.now();
+    this.save();
+  }
+};
+
+// ============================================================
+// HELPERS
+// ============================================================
+
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
+function escapeHtml(str) {
+  if (str === null || str === undefined) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function sectionForIndex(idx) {
+  return Math.floor(idx / SECTION_SIZE) + 1;
+}
+
+// ============================================================
+// VIEWS
+// ============================================================
+
+function renderWelcome() {
+  return `
+    <div class="fade-in bg-white rounded-2xl shadow-sm border border-stone-200 p-8 sm:p-12 mt-12">
+      <div class="text-center">
+        <div class="text-5xl mb-4">🐾</div>
+        <h1 class="text-3xl sm:text-4xl font-bold text-stone-900 mb-2">Paws Calibration</h1>
+        <p class="text-lg text-stone-600 mb-8">${escapeHtml(ANNOTATOR)}</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div class="bg-stone-50 rounded-xl p-5 text-center">
+          <div class="text-3xl font-bold text-stone-900">${N_PAIRS}</div>
+          <div class="text-sm text-stone-600 mt-1">пар диалогов</div>
+        </div>
+        <div class="bg-stone-50 rounded-xl p-5 text-center">
+          <div class="text-3xl font-bold text-stone-900">${CRITERIA.length}</div>
+          <div class="text-sm text-stone-600 mt-1">критериев каждый</div>
+        </div>
+        <div class="bg-stone-50 rounded-xl p-5 text-center">
+          <div class="text-3xl font-bold text-stone-900">~2.5ч</div>
+          <div class="text-sm text-stone-600 mt-1">оценочное время</div>
+        </div>
+      </div>
+
+      <div class="prose prose-stone max-w-none mb-8">
+        <h2 class="text-xl font-semibold text-stone-900 mb-3">Что нужно сделать</h2>
+        <p class="text-stone-700">Прочитать пару «сообщение клиента → ответ менеджера» и оценить ответ менеджера по 5 критериям: <strong>PASS</strong> (норм), <strong>FAIL</strong> (нарушено), <strong>N/A</strong> (не применимо).</p>
+
+        <h2 class="text-xl font-semibold text-stone-900 mb-3 mt-6">Важно</h2>
+        <ul class="space-y-2 text-stone-700">
+          <li>📊 Это <strong>multi-annotator calibration</strong> — те же ${N_PAIRS} пар оценивают также Диана и Милана независимо. Где все 3 совпадут — ground truth. Где разойдётесь — обсуждаем.</li>
+          <li>🎯 Оцениваем <strong>как менеджеры реально работают</strong>, не «как должно быть в идеале». Если manager Иван/Диана/Милана реально пишет 5-словный ответ без долгих объяснений — это PASS.</li>
+          <li>⏱ Минимум 20 секунд на пару — иначе кнопка «Дальше» заблокирована.</li>
+          <li>💬 Комментарий <strong>обязателен на FAIL</strong>: 1-2 строки почему.</li>
+          <li>💾 Прогресс сохраняется автоматически. Можно паузу + вернуться позже.</li>
+          <li>📤 В конце — «Экспорт» → файл .json → отправить ответ.</li>
+        </ul>
+
+        <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mt-6">
+          <p class="text-sm text-stone-800"><strong>Если сомневаешься:</strong> ставь <strong>N/A</strong> + comment почему. Лучше честное «не знаю» чем угаданный PASS.</p>
+        </div>
+      </div>
+
+      ${State.data.current_index > 0 || State.data.started_at ? `
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <p class="text-sm text-blue-900"><strong>↩️ Найдена сохранённая сессия.</strong> Прогресс: ${State.countComplete()}/${N_PAIRS} пар.</p>
+        </div>
+        <div class="flex gap-3">
+          <button onclick="onStart()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-xl shadow-sm transition">▶️ Продолжить</button>
+          <button onclick="onResetConfirm()" class="px-6 py-3 rounded-xl border border-stone-300 hover:bg-stone-100 transition text-stone-700 font-medium">🔄 Начать заново</button>
+        </div>
+      ` : `
+        <button onclick="onStart()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-4 rounded-xl shadow-sm transition text-lg">▶️ Начать (${N_PAIRS} пар, ~2.5ч)</button>
+      `}
+    </div>
+  `;
+}
+
+function renderProgressBar() {
+  const completed = State.countComplete();
+  const percent = Math.round((completed / N_PAIRS) * 100);
+  const currentSection = sectionForIndex(State.data.current_index);
+  const sectionDots = Array.from({length: N_SECTIONS}, (_, i) => {
+    const sectionNum = i + 1;
+    const sectionStart = i * SECTION_SIZE;
+    const sectionEnd = Math.min(sectionStart + SECTION_SIZE, N_PAIRS);
+    const sectionComplete = PAIRS.slice(sectionStart, sectionEnd).every(p => State.isPairComplete(p.id));
+    const isCurrent = sectionNum === currentSection;
+    const cls = sectionComplete ? "complete" : (isCurrent ? "current" : "");
+    return `<div class="section-dot w-2.5 h-2.5 rounded-full bg-stone-300 ${cls}" title="Секция ${sectionNum}"></div>`;
+  }).join("");
+
+  const elapsed = State.data.started_at ? Math.round((Date.now() - State.data.started_at) / 1000) : 0;
+  const estimatedRemaining = completed > 0
+    ? Math.round((elapsed / completed) * (N_PAIRS - completed))
+    : null;
+
+  return `
+    <div class="sticky top-0 bg-stone-50/95 backdrop-blur z-10 border-b border-stone-200 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 mb-6">
+      <div class="max-w-5xl mx-auto">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-3">
+            <span class="text-sm font-semibold text-stone-900">${completed}/${N_PAIRS}</span>
+            <span class="text-xs text-stone-500">·</span>
+            <span class="text-xs text-stone-600">Секция ${currentSection}/${N_SECTIONS}</span>
+            ${estimatedRemaining ? `<span class="text-xs text-stone-500">·</span><span class="text-xs text-stone-600">осталось ~${formatTime(estimatedRemaining)}</span>` : ''}
+          </div>
+          <div class="flex items-center gap-1.5">${sectionDots}</div>
+        </div>
+        <div class="h-2 bg-stone-200 rounded-full overflow-hidden">
+          <div class="progress-bar h-full bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full" style="width: ${percent}%"></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderSectionBreak(sectionJustCompleted) {
+  return `
+    <div class="fade-in bg-white rounded-2xl shadow-sm border border-stone-200 p-8 sm:p-12 mt-6">
+      <div class="text-center">
+        <div class="text-5xl mb-4">✨</div>
+        <h2 class="text-2xl font-bold text-stone-900 mb-2">Секция ${sectionJustCompleted}/${N_SECTIONS} готова</h2>
+        <p class="text-stone-600 mb-8">Хороший момент для перерыва. Прогресс сохранён.</p>
+
+        <div class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+          <button onclick="onContinueAfterBreak()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-xl shadow-sm transition">▶️ Продолжить</button>
+          <button onclick="onPause()" class="flex-1 px-6 py-3 rounded-xl border border-stone-300 hover:bg-stone-100 transition text-stone-700 font-medium">☕ Пауза</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderPair() {
+  const idx = State.data.current_index;
+  const pair = PAIRS[idx];
+  const label = State.data.labels[pair.id] || { criteria: {}, confidence: null, comment: "", time_spent_s: 0 };
+  const hasFail = Object.values(label.criteria).some(v => v === "FAIL");
+  const allCriteriaSelected = Object.keys(label.criteria).length === CRITERIA.length;
+  const commentRequired = hasFail && (!label.comment || label.comment.trim().length < 3);
+
+  const criteriaHtml = CRITERIA.map((c, i) => {
+    const value = label.criteria[c.id] || null;
+    const passSelected = value === "PASS" ? "selected-pass" : "";
+    const failSelected = value === "FAIL" ? "selected-fail" : "";
+    const naSelected = value === "N/A" ? "selected-na" : "";
+    return `
+      <div class="border border-stone-200 rounded-xl p-4 bg-white">
+        <div class="flex items-start gap-3 mb-3">
+          <div class="bg-stone-100 text-stone-700 font-semibold rounded-lg w-7 h-7 flex items-center justify-center text-sm flex-shrink-0">${i+1}</div>
+          <div class="flex-1">
+            <div class="font-semibold text-stone-900">${escapeHtml(c.title)}</div>
+            <div class="text-sm text-stone-600 mt-0.5">${escapeHtml(c.question)}</div>
+          </div>
+          <details class="ml-2">
+            <summary class="text-xs text-blue-600 hover:text-blue-700 select-none">примеры <span class="chevron">›</span></summary>
+            <div class="absolute right-0 mt-1 w-80 bg-white rounded-lg shadow-lg border border-stone-200 p-4 text-sm z-20">
+              <div class="text-emerald-700 mb-2"><strong>✅ PASS:</strong> ${escapeHtml(c.pass_example)}</div>
+              <div class="text-red-700 mb-2"><strong>❌ FAIL:</strong> ${escapeHtml(c.fail_example)}</div>
+              <div class="text-stone-600"><strong>⚪ N/A:</strong> ${escapeHtml(c.na_example)}</div>
+            </div>
+          </details>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="onCriterion('${c.id}', 'PASS')" class="criterion-button ${passSelected} flex-1 px-4 py-2.5 rounded-lg border border-stone-300 font-medium text-sm hover:border-stone-400">✅ PASS</button>
+          <button onclick="onCriterion('${c.id}', 'FAIL')" class="criterion-button ${failSelected} flex-1 px-4 py-2.5 rounded-lg border border-stone-300 font-medium text-sm hover:border-stone-400">❌ FAIL</button>
+          <button onclick="onCriterion('${c.id}', 'N/A')"  class="criterion-button ${naSelected}   flex-1 px-4 py-2.5 rounded-lg border border-stone-300 font-medium text-sm hover:border-stone-400">⚪ N/A</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  const confidenceHtml = [1, 2, 3].map(level => {
+    const sel = label.confidence === level ? "selected-pass" : "";
+    const lbl = level === 1 ? "уверена" : level === 2 ? "сомневаюсь" : "критерий неясен";
+    return `<button onclick="onConfidence(${level})" class="criterion-button ${sel} flex-1 px-4 py-2 rounded-lg border border-stone-300 text-sm font-medium hover:border-stone-400"><strong>${level}</strong> · ${lbl}</button>`;
+  }).join("");
+
+  // Compute view time + min-view gate
+  const viewStarted = State.data.view_started_at[pair.id] || Date.now();
+  const viewSecondsThisSession = Math.floor((Date.now() - viewStarted) / 1000);
+  const totalViewSeconds = (label.time_spent_s || 0) + viewSecondsThisSession;
+  const minViewMet = totalViewSeconds >= MIN_VIEW_SECONDS;
+
+  const canSubmit = allCriteriaSelected && label.confidence && !commentRequired && minViewMet;
+
+  return `
+    <div class="fade-in pair-card bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden mb-6">
+      <div class="p-5 sm:p-6 border-b border-stone-200 bg-stone-50">
+        <div class="flex items-center justify-between text-xs text-stone-500 mb-2">
+          <span class="font-semibold text-stone-700">Пара ${idx + 1} из ${N_PAIRS}</span>
+          <span><span class="timer">${formatTime(totalViewSeconds)}</span> на этой паре</span>
+        </div>
+        <div class="flex flex-wrap gap-2 text-xs">
+          <span class="bg-stone-200 text-stone-700 px-2 py-0.5 rounded">${escapeHtml(pair.service)}</span>
+          <span class="bg-stone-200 text-stone-700 px-2 py-0.5 rounded">${escapeHtml(pair.phase)}</span>
+          <span class="bg-stone-200 text-stone-700 px-2 py-0.5 rounded">${escapeHtml(pair.intent_class)}</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-stone-200">
+        <div class="p-5 sm:p-6">
+          <div class="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-2">💬 Клиент написал:</div>
+          <div class="text-stone-900 whitespace-pre-wrap leading-relaxed">${escapeHtml(pair.client_msg) || '<span class="text-stone-400 italic">(пусто)</span>'}</div>
+        </div>
+        <div class="p-5 sm:p-6 bg-blue-50/30">
+          <div class="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-2">👤 Менеджер ответил:</div>
+          <div class="text-stone-900 whitespace-pre-wrap leading-relaxed">${escapeHtml(pair.manager_response) || '<span class="text-stone-400 italic">(пусто)</span>'}</div>
+        </div>
+      </div>
+
+      <div class="p-5 sm:p-6 space-y-3 bg-stone-50/50 border-t border-stone-200">
+        <div class="text-sm font-semibold text-stone-700 mb-1">Оценить ответ менеджера по 5 критериям:</div>
+        ${criteriaHtml}
+      </div>
+
+      <div class="p-5 sm:p-6 border-t border-stone-200">
+        <div class="text-sm font-semibold text-stone-700 mb-2">Уверенность в оценке</div>
+        <div class="flex gap-2 mb-4">${confidenceHtml}</div>
+
+        <div>
+          <label class="text-sm font-semibold text-stone-700">Комментарий ${hasFail ? '<span class="text-red-600">*обязателен на FAIL</span>' : '<span class="text-stone-400">(опционально)</span>'}</label>
+          <textarea
+            id="comment-input"
+            oninput="onCommentInput(this.value)"
+            placeholder="${hasFail ? 'Почему FAIL? 1-2 строки...' : 'Если случай interesting — 1-2 строки...'}"
+            class="mt-1 w-full border border-stone-300 rounded-lg p-3 text-sm focus:border-blue-500"
+            rows="2">${escapeHtml(label.comment)}</textarea>
+        </div>
+      </div>
+
+      <div class="p-5 sm:p-6 border-t border-stone-200 bg-stone-50">
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <button onclick="onPrev()" ${idx === 0 ? 'disabled' : ''} class="px-5 py-2.5 rounded-lg border border-stone-300 text-stone-700 font-medium hover:bg-stone-100 transition disabled:opacity-40 disabled:cursor-not-allowed">← Назад</button>
+
+          <div class="text-xs text-stone-500">
+            ${!minViewMet ? `⏱ <span class="timer">${MIN_VIEW_SECONDS - totalViewSeconds}s</span> до разблокировки` : ''}
+            ${!allCriteriaSelected ? '· оценить все 5' : ''}
+            ${!label.confidence ? '· уверенность' : ''}
+            ${commentRequired ? '· комментарий на FAIL' : ''}
+          </div>
+
+          <button onclick="onNext()" ${!canSubmit ? 'disabled' : ''} class="px-6 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition disabled:opacity-40 disabled:cursor-not-allowed disabled:bg-stone-400">
+            ${idx === N_PAIRS - 1 ? 'Финиш →' : 'Дальше →'}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center text-xs text-stone-500">
+      <button onclick="onPause()" class="hover:text-stone-700 underline">☕ Пауза и продолжить позже</button>
+    </div>
+  `;
+}
+
+function renderFinish() {
+  const completed = State.countComplete();
+  const totalTime = State.data.started_at ? Math.round((Date.now() - State.data.started_at) / 1000) : 0;
+  const allConfidence = PAIRS.map(p => State.data.labels[p.id]?.confidence).filter(Boolean);
+  const conf1 = allConfidence.filter(c => c === 1).length;
+  const conf2 = allConfidence.filter(c => c === 2).length;
+  const conf3 = allConfidence.filter(c => c === 3).length;
+  const totalFails = PAIRS.reduce((sum, p) => {
+    const lbl = State.data.labels[p.id];
+    if (!lbl) return sum;
+    return sum + Object.values(lbl.criteria).filter(v => v === "FAIL").length;
+  }, 0);
+
+  const submitState = State.data.submit_state || {status: "idle"};
+  const submittedAt = State.data.submitted_at;
+
+  let actionPanel = "";
+  if (submitState.status === "success") {
+    actionPanel = `
+      <div class="bg-emerald-50 border-2 border-emerald-300 rounded-xl p-6 mb-4 text-center">
+        <div class="text-4xl mb-2">✅</div>
+        <h3 class="text-xl font-bold text-emerald-900 mb-1">Ответ получен</h3>
+        <p class="text-sm text-emerald-800">Отправлено ${new Date(submittedAt).toLocaleString('ru-RU')} · файл <code class="bg-emerald-100 px-1.5 py-0.5 rounded">${escapeHtml(submitState.saved_as || '—')}</code></p>
+        <p class="text-sm text-emerald-800 mt-2">Можно закрыть вкладку. Спасибо! 🐾</p>
+      </div>
+      <div class="flex justify-center">
+        <button onclick="onDownloadBackup()" class="text-sm px-4 py-2 rounded-lg border border-stone-300 hover:bg-stone-100 transition text-stone-700">⬇ Скачать копию (на всякий случай)</button>
+      </div>
+    `;
+  } else if (submitState.status === "sending") {
+    actionPanel = `
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-4 text-center">
+        <div class="text-4xl mb-2 animate-pulse">📡</div>
+        <h3 class="text-xl font-bold text-blue-900 mb-1">Отправляю ответ...</h3>
+        <p class="text-sm text-blue-800">Если зависло > 30 секунд — попробуй ещё раз или скачай файл вручную</p>
+      </div>
+    `;
+  } else if (submitState.status === "error") {
+    actionPanel = `
+      <div class="bg-amber-50 border border-amber-300 rounded-xl p-6 mb-4">
+        <div class="flex items-start gap-3">
+          <div class="text-3xl">⚠</div>
+          <div class="flex-1">
+            <h3 class="text-lg font-bold text-amber-900 mb-1">Не удалось отправить автоматически</h3>
+            <p class="text-sm text-amber-800 mb-3">Ошибка: <code class="bg-amber-100 px-1.5 py-0.5 rounded text-xs">${escapeHtml(submitState.error || 'unknown')}</code></p>
+            <p class="text-sm text-amber-900"><strong>Что делать:</strong> скачай файл ниже и отправь в чат. Прогресс не теряется.</p>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <button onclick="onDownloadBackup()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-4 rounded-xl shadow-sm transition text-lg">⬇ Скачать .json (отправь в TG)</button>
+        <button onclick="onSubmit()" class="px-6 py-4 rounded-xl border border-stone-300 hover:bg-stone-100 transition text-stone-700 font-medium">🔁 Попробовать ещё раз</button>
+      </div>
+    `;
+  } else {
+    // idle / first time on finish screen
+    actionPanel = `
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-5 mb-6">
+        <h3 class="font-semibold text-blue-900 mb-2">📤 Готово к отправке</h3>
+        <p class="text-sm text-blue-900">Нажми кнопку ниже — твой ответ автоматически сохранится автоматически. Никаких файлов скачивать не нужно.</p>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <button onclick="onSubmit()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-4 rounded-xl shadow-sm transition text-lg">📤 Отправить и завершить</button>
+        <button onclick="State.data.current_index = 0; State.save(); render();" class="px-6 py-4 rounded-xl border border-stone-300 hover:bg-stone-100 transition text-stone-700 font-medium">↩️ Просмотреть пары</button>
+      </div>
+      <div class="mt-3 text-center">
+        <button onclick="onDownloadBackup()" class="text-xs text-stone-500 hover:text-stone-700 underline">или скачать .json вручную</button>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="fade-in bg-white rounded-2xl shadow-sm border border-stone-200 p-8 sm:p-12 mt-12">
+      <div class="text-center mb-8">
+        <div class="text-6xl mb-4">🎉</div>
+        <h1 class="text-3xl sm:text-4xl font-bold text-stone-900 mb-2">Готово!</h1>
+        <p class="text-lg text-stone-600">${completed}/${N_PAIRS} пар оценены за ${formatTime(totalTime)}</p>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+        <div class="bg-stone-50 rounded-xl p-4 text-center">
+          <div class="text-2xl font-bold text-emerald-700">${conf1}</div>
+          <div class="text-xs text-stone-600 mt-1">уверена (1)</div>
+        </div>
+        <div class="bg-stone-50 rounded-xl p-4 text-center">
+          <div class="text-2xl font-bold text-amber-700">${conf2}</div>
+          <div class="text-xs text-stone-600 mt-1">сомневаюсь (2)</div>
+        </div>
+        <div class="bg-stone-50 rounded-xl p-4 text-center">
+          <div class="text-2xl font-bold text-stone-600">${conf3}</div>
+          <div class="text-xs text-stone-600 mt-1">критерий неясен (3)</div>
+        </div>
+        <div class="bg-stone-50 rounded-xl p-4 text-center">
+          <div class="text-2xl font-bold text-red-700">${totalFails}</div>
+          <div class="text-xs text-stone-600 mt-1">FAILов всего</div>
+        </div>
+      </div>
+
+      ${actionPanel}
+
+      <div class="mt-8 pt-6 border-t border-stone-200 text-xs text-stone-500 text-center">
+        Если что-то пошло не так — пиши в чат. Прогресс в браузере сохраняется.
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// HANDLERS
+// ============================================================
+
+let viewTimer = null;
+
+function render() {
+  const app = document.getElementById('app');
+  let html = "";
+
+  if (State.data.completed_at) {
+    html = renderFinish();
+  } else if (!State.data.started_at) {
+    html = renderWelcome();
+  } else {
+    // Check if we just completed a section
+    const idx = State.data.current_index;
+    const justCompletedSectionIdx = idx % SECTION_SIZE === 0 && idx > 0;
+    const sectionPrevComplete = idx > 0 ? PAIRS.slice((sectionForIndex(idx - 1) - 1) * SECTION_SIZE, sectionForIndex(idx - 1) * SECTION_SIZE).every(p => State.isPairComplete(p.id)) : false;
+
+    html = renderProgressBar();
+    if (justCompletedSectionIdx && sectionPrevComplete && !sessionState.skipBreak) {
+      html += renderSectionBreak(sectionForIndex(idx - 1));
+    } else {
+      html += renderPair();
+    }
+  }
+
+  app.innerHTML = html;
+
+  // Record view start for current pair (if on pair view)
+  if (State.data.started_at && !State.data.completed_at) {
+    const idx = State.data.current_index;
+    const pair = PAIRS[idx];
+    if (pair && !State.data.view_started_at[pair.id]) {
+      State.recordView(pair.id);
+    }
+    scheduleMinViewUnlock();
+  }
+  sessionState.skipBreak = false;
+}
+
+const sessionState = {
+  skipBreak: false  // set true when continuing past a section break
+};
+
+function onStart() {
+  State.start();
+  render();
+  // Single setTimeout to re-render at min-view threshold so Next button unlocks.
+  // No 1s interval (would steal textarea focus during typing).
+  scheduleMinViewUnlock();
+}
+
+function scheduleMinViewUnlock() {
+  if (viewTimer) clearTimeout(viewTimer);
+  if (State.data.completed_at || !State.data.started_at) return;
+  const idx = State.data.current_index;
+  const pair = PAIRS[idx];
+  if (!pair) return;
+  const label = State.data.labels[pair.id] || { time_spent_s: 0 };
+  const viewStarted = State.data.view_started_at[pair.id] || Date.now();
+  const totalSec = (label.time_spent_s || 0) + Math.floor((Date.now() - viewStarted) / 1000);
+  const remainingMs = (MIN_VIEW_SECONDS - totalSec) * 1000;
+  if (remainingMs > 0) {
+    viewTimer = setTimeout(() => render(), remainingMs);
+  }
+}
+
+function onResetConfirm() {
+  if (confirm("Сбросить весь прогресс и начать заново? Это нельзя отменить.")) {
+    State.reset();
+    render();
+  }
+}
+
+function onCriterion(criterionId, value) {
+  const idx = State.data.current_index;
+  const pair = PAIRS[idx];
+  State.setLabel(pair.id, criterionId, value);
+  render();
+}
+
+function onConfidence(level) {
+  const idx = State.data.current_index;
+  const pair = PAIRS[idx];
+  State.setConfidence(pair.id, level);
+  render();
+}
+
+function onCommentInput(value) {
+  const idx = State.data.current_index;
+  const pair = PAIRS[idx];
+  State.setComment(pair.id, value);
+  // Don't full re-render on every keystroke — just save state
+  // But update the disabled state of "Next" button
+  const labelData = State.data.labels[pair.id];
+  if (labelData && State.isPairComplete(pair.id)) {
+    // re-render only Next button state  ; for simplicity full render but preserve focus on textarea
+    const pos = document.activeElement?.selectionStart;
+    render();
+    const ta = document.getElementById('comment-input');
+    if (ta && pos != null) {
+      ta.focus();
+      ta.setSelectionRange(pos, pos);
+    }
+  }
+}
+
+function onNext() {
+  const idx = State.data.current_index;
+  const pair = PAIRS[idx];
+  State.recordTimeSpent(pair.id);
+  if (!State.goNext()) {
+    State.finish();
+  }
+  render();
+}
+
+function onPrev() {
+  const idx = State.data.current_index;
+  const pair = PAIRS[idx];
+  State.recordTimeSpent(pair.id);
+  State.goPrev();
+  sessionState.skipBreak = true;
+  render();
+}
+
+function onContinueAfterBreak() {
+  sessionState.skipBreak = true;
+  render();
+}
+
+function onPause() {
+  alert("Прогресс сохранён в этом браузере. Просто закрой вкладку и вернись когда удобно — откроешь файл и продолжишь.");
+}
+
+async function onSubmit() {
+  const idx = State.data.current_index;
+  if (PAIRS[idx]) State.recordTimeSpent(PAIRS[idx].id);
+
+  State.data.submit_state = {status: "sending"};
+  State.save();
+  render();
+
+  try {
+    const annotatorSlug = ANNOTATOR.toLowerCase();
+    const url = `${SUBMIT_ENDPOINT}/${annotatorSlug}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Calibration-Token": SUBMIT_TOKEN,
+      },
+      body: JSON.stringify(State.data),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      State.data.submit_state = {status: "error", error: `HTTP ${response.status}: ${text.slice(0, 200)}`};
+      State.save();
+      render();
+      return;
+    }
+
+    const data = await response.json();
+    State.data.submit_state = {status: "success", saved_as: data.saved_as, received_pairs: data.received_pairs};
+    State.data.submitted_at = Date.now();
+    State.save();
+    render();
+  } catch (e) {
+    State.data.submit_state = {status: "error", error: e.message || String(e)};
+    State.save();
+    render();
+  }
+}
+
+function onDownloadBackup() {
+  const idx = State.data.current_index;
+  if (PAIRS[idx]) State.recordTimeSpent(PAIRS[idx].id);
+  const blob = new Blob([JSON.stringify(State.data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const date = new Date().toISOString().split('T')[0];
+  a.href = url;
+  a.download = `paws_calibration_${ANNOTATOR.replace(/[^a-zA-Z0-9]/g, '_')}_${date}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// Legacy alias (kept for any leftover refs)
+const onExport = onDownloadBackup;
+
+// ============================================================
+// INIT
+// ============================================================
+
+State.init();
+render();
+
+// Save view-time on tab close
+window.addEventListener('beforeunload', () => {
+  const idx = State.data.current_index;
+  if (PAIRS[idx]) State.recordTimeSpent(PAIRS[idx].id);
+});
+
+</script>
+</body>
+</html>
